@@ -1,0 +1,19 @@
+﻿<Window x:Class="USB_Data_Stealer.DataTransferringWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Width="100"
+        Height="5"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        Topmost="True"
+        Loaded="DataTransferringWindow_OnLoaded"
+        ShowInTaskbar="False"
+        WindowStyle="None"
+        mc:Ignorable="d">
+    <ProgressBar Name="ProgressBarTransferring" d:DataContext="{d:DesignData}"
+                 Background="Transparent"
+                 BorderBrush="{Binding Foreground,
+                                       RelativeSource={RelativeSource Self}}" />
+</Window>

@@ -1,0 +1,438 @@
+﻿<Window x:Class="USB_Data_Stealer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:USB_Data_Stealer.Converters"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="USB Data Stealer"
+        Width="650"
+        Height="450"
+        MinWidth="650"
+        MinHeight="450"
+        Closing="Window_Closing"
+        FontSize="20"
+        Icon="Images/app.ico"
+        Loaded="Window_Loaded"
+        Style="{StaticResource {x:Type Window}}"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d">
+    <Window.Resources />
+    <Grid>
+
+        <TabControl>
+            <TabItem Header="Main">
+                <Grid>
+                    <Grid.Resources>
+                        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Button x:Name="ButtonStartMonitor"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            d:DataContext="{d:DesignData}"
+                            Click="ButtonStartMonitor_Click"
+                            IsEnabled="{Binding IsMonitoring,
+                                                Converter={StaticResource InverseBooleanConverter}}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Width="32"
+                                       Height="32"
+                                       Margin="0,0,10,0"
+                                       Source="Images/start.png" />
+                                <TextBlock VerticalAlignment="Center" Text="START MONITOR" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <Button x:Name="ButtonStopMonitor"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            VerticalAlignment="Top"
+                            d:DataContext="{d:DesignData}"
+                            Click="ButtonStopMonitor_Click"
+                            IsEnabled="{Binding IsMonitoring}">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Width="32"
+                                       Height="32"
+                                       Margin="0,0,10,0"
+                                       Source="Images/stop.png" />
+                                <TextBlock VerticalAlignment="Center" Text="STOP MONITOR" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    <ListBox x:Name="ListViewDrives"
+                             Grid.Row="1"
+                             Grid.Column="0"
+                             Grid.ColumnSpan="2"
+                             d:DataContext="{d:DesignData}"
+                             MouseDoubleClick="ListViewDrives_OnMouseDoubleClick"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                        <ListBox.Items>
+                            <ListBoxItem Name="ListBoxItemNoDrives" Content="No removable Driver detected." />
+                        </ListBox.Items>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+
+                                <StackPanel Name="StackPanelDrive"
+                                            Margin="10"
+                                            HorizontalAlignment="Left">
+                                    <ProgressBar Height="15"
+                                                 d:DataContext="{d:DesignData}"
+                                                 Background="Transparent"
+                                                 BorderBrush="{Binding Foreground,
+                                                                       RelativeSource={RelativeSource Self}}"
+                                                 Value="{Binding FreeSpacePercentage,
+                                                                 Mode=OneTime}" />
+                                    <Label d:DataContext="{d:DesignData}" Content="{Binding VolumeLabelAndName, Mode=OneTime}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Settings">
+                <TabControl IsEnabled="{Binding IsEnabled, ElementName=ButtonStartMonitor}" TabStripPlacement="Left">
+
+                    <TabControl.Resources>
+                        <Style BasedOn="{StaticResource NormalTabItem}" TargetType="{x:Type TabItem}" />
+                    </TabControl.Resources>
+
+                    <TabItem Header="General">
+
+                        <Grid d:DataContext="{d:DesignData}">
+
+                            <Grid.Resources>
+
+                                <converters:StringToKeyConverter x:Key="StringToKeyConverter" />
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Label Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="5,5,5,5"
+                                   VerticalContentAlignment="Bottom"
+                                   Content="Stolen Data Path:" />
+                            <TextBox x:Name="TextBoxStolenDataPath"
+                                     Grid.Row="0"
+                                     Grid.Column="1"
+                                     Margin="5,5,5,5"
+                                     HorizontalContentAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     IsReadOnly="True"
+                                     Text="{Binding StolenDataPath,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}" />
+                            <Button x:Name="ButtonChooseStolenDataPath"
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Margin="5,5,5,5"
+                                    Click="ButtonChooseStolenDataPath_Click">
+                                <Image HorizontalAlignment="Right" Source="Images/folder.png" />
+                            </Button>
+
+                            <Label Grid.Row="2"
+                                   Grid.Column="0"
+                                   Margin="5,5,5,5"
+                                   VerticalContentAlignment="Bottom"
+                                   Content="Monitor Refresh Rate:" />
+                            <TextBox x:Name="TextBoxMonitorRefreshRate"
+                                     Grid.Row="2"
+                                     Grid.Column="1"
+                                     Height="37"
+                                     Margin="5,5,5,5"
+                                     HorizontalContentAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     Text="{Binding MonitorRefreshRate,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}" />
+                            <Label Grid.Row="2"
+                                   Grid.Column="2"
+                                   Margin="5,5,5,5"
+                                   VerticalContentAlignment="Center"
+                                   Content="ms." />
+
+                            <Label Grid.Row="3"
+                                   Grid.Column="0"
+                                   Margin="5,5,5,5"
+                                   VerticalContentAlignment="Bottom"
+                                   Content="Start Hot Key:" />
+
+                            <ComboBox Name="ComboBoxStartHotKey"
+                                      Grid.Row="3"
+                                      Grid.Column="1"
+                                      Margin="5,5,5,5"
+                                      HorizontalContentAlignment="Center"
+                                      VerticalContentAlignment="Center"
+                                      SelectedItem="{Binding StartMonitorHotKey,
+                                                             Mode=TwoWay,
+                                                             UpdateSourceTrigger=PropertyChanged,
+                                                             Converter={StaticResource StringToKeyConverter}}" />
+                            <Label Grid.Row="4"
+                                   Grid.Column="0"
+                                   Margin="5,5,5,5"
+                                   VerticalContentAlignment="Bottom"
+                                   Content="Stop Hot Key:" />
+                            <ComboBox x:Name="ComboBoxStopHotKey"
+                                      Grid.Row="4"
+                                      Grid.Column="1"
+                                      Margin="5,5,5,5"
+                                      HorizontalContentAlignment="Center"
+                                      VerticalContentAlignment="Center"
+                                      SelectedItem="{Binding StopMonitorHotKey,
+                                                             Mode=TwoWay,
+                                                             UpdateSourceTrigger=PropertyChanged,
+                                                             Converter={StaticResource StringToKeyConverter}}" />
+
+                            <CheckBox Name="CheckBoxLaunchOnStartup"
+                                      Grid.Row="5"
+                                      Grid.Column="0"
+                                      Grid.ColumnSpan="2"
+                                      Margin="5,5,5,5"
+                                      Click="CheckBoxLaunchOnStartup_OnClick"
+                                      Content="Launch USB Data Stealer on startup" />
+
+                            <Button x:Name="ButtonResetSettings"
+                                    Grid.Row="6"
+                                    Grid.Column="2"
+                                    Margin="5,5,5,5"
+                                    Click="ButtonResetSettings_Click">
+                                <Button.Content>
+
+                                    <Image Margin="5,5,5,5" Source="Images/reset.png" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="File Transferring">
+                        <Grid>
+                            <Grid.Resources>
+
+                                <converters:StringToArrayConverter x:Key="StringToArrayConverter" />
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="5,5,5,5"
+                                   VerticalContentAlignment="Bottom"
+                                   Content="Extensions with Precedence:" />
+                            <TextBox x:Name="TextBoxPrecedenceExtensions"
+                                     Grid.Row="0"
+                                     Grid.Column="1"
+                                     Grid.ColumnSpan="2"
+                                     Height="37"
+                                     Margin="5,5,5,5"
+                                     VerticalContentAlignment="Center"
+                                     Text="{Binding PrecedenceExtensions,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged,
+                                                    Converter={StaticResource StringToArrayConverter}}" />
+                            <Label Grid.Row="1"
+                                   Grid.Column="0"
+                                   Grid.ColumnSpan="2"
+                                   HorizontalContentAlignment="Center"
+                                   Content="Example (separated by one space): .txt .pdf .docx etc.."
+                                   FontSize="15" />
+                            <CheckBox x:Name="CheckBoxCopyFilesBySize"
+                                      Grid.Row="2"
+                                      Grid.Column="0"
+                                      Margin="5,5,5,5"
+                                      Content="Copy files by Size (smaller files first)."
+                                      IsChecked="{Binding CopyBySize,
+                                                          Mode=TwoWay,
+                                                          UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Name="CheckBoxShowProgress"
+                                      Grid.Row="3"
+                                      Grid.Column="0"
+                                      Margin="5,5,5,5"
+                                      Content="Show transfer progress"
+                                      IsChecked="{Binding ShowProgress}">
+
+                                <CheckBox.ToolTip>
+
+                                    <Image Source="Images/ProgressStatus.png" ToolTip="Screen-shot" />
+                                </CheckBox.ToolTip>
+                            </CheckBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Margin="1,0,-1,-1" Header="Log">
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0"
+                                   Grid.Column="0"
+                                   Margin="5,5,5,5"
+                                   Content="Log Path:" />
+                            <TextBox x:Name="TextBoxLogPath"
+                                     Grid.Row="0"
+                                     Grid.Column="1"
+                                     Height="37"
+                                     Margin="5,5,5,5"
+                                     HorizontalContentAlignment="Center"
+                                     IsReadOnly="True"
+                                     Text="{Binding LogPath,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}" />
+                            <Button x:Name="ButtonChooseLogPath"
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Margin="5,5,5,5"
+                                    Click="ButtonChooseLogPath_Click">
+                                <Image HorizontalAlignment="Right" Source="Images/folder.png" />
+                            </Button>
+                            <CheckBox x:Name="CheckBoxEnableLogFile"
+                                      Grid.Row="1"
+                                      Grid.Column="0"
+                                      Grid.ColumnSpan="2"
+                                      Margin="5,5,5,5"
+                                      d:DataContext="{d:DesignData}"
+                                      Content="Enable Log File"
+                                      IsChecked="{Binding EnableFileLogging,
+                                                          Mode=TwoWay,
+                                                          UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Name="TabItemLog"
+                     GotFocus="TabItemLog_OnGotFocus"
+                     Header="Log">
+
+                <DataGrid Name="DataGridLog"
+                          d:DataContext="{d:DesignData}"
+                          AutoGenerateColumns="False"
+                          CanUserSortColumns="False"
+                          HorizontalScrollBarVisibility="Visible"
+                          IsReadOnly="True"
+                          VerticalScrollBarVisibility="Visible">
+                    <DataGrid.Resources />
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Binding="{Binding DateTime}">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <Image Width="24"
+                                           Height="24"
+                                           HorizontalAlignment="Center"
+                                           Source="Images/clock.png" />
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding EventType}" Header="Event Type">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <Image Width="24"
+                                           Height="24"
+                                           HorizontalAlignment="Center"
+                                           Source="Images/label.png" />
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Binding="{Binding Text}" Header="Text">
+                            <DataGridTextColumn.HeaderTemplate>
+                                <DataTemplate>
+                                    <Image Width="24"
+                                           Height="24"
+                                           HorizontalAlignment="Center"
+                                           Source="Images/message.png" />
+                                </DataTemplate>
+                            </DataGridTextColumn.HeaderTemplate>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+
+                        <Style BasedOn="{StaticResource {x:Type DataGridRow}}" TargetType="{x:Type DataGridRow}">
+                            <Style.Resources>
+
+                                <converters:MessageToBrushConverter x:Key="MessageToBrushConverter" />
+                            </Style.Resources>
+                            <Setter Property="Foreground" Value="{Binding EventType, Converter={StaticResource MessageToBrushConverter}}" />
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="About">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Margin="5,5,5,5"
+                               HorizontalAlignment="Center">
+                        Coded by Jacopo Balducci.
+                        <LineBreak />
+                        Theme by Dan Pristupov.
+                    </TextBlock>
+
+                    <Button x:Name="ButtonDonate"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            Click="ButtonDonate_OnClick">
+
+                        <Image Source="https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_74x21.png" />
+                    </Button>
+                    <Button x:Name="ButtonGitHub"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Click="ButtonGitHub_Click">
+
+                        <Image x:Name="ImageGitHub" Source="http://random-octodex.herokuapp.com/random" />
+                    </Button>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
